@@ -1,47 +1,22 @@
-<!-- LIGHT CREAMISH SLIGHT GREEN -->
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNMBCT Launch Protocol - Cream Light Mode</title>
+    <title>SNMBCT Website Launch</title>
     <link rel="preload" as="image" href="snmbct.png">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-        /* --- CREAM LIGHT MODE COLOR VARIABLES --- */
-        :root {
-            /* ... keep your existing tech-green/gold variables ... */
-            --tech-green: #83e334; 
-            --tech-gold: #ffd700;
-            --light-bg-center: #fffef8; 
-            --light-bg-edge: #f2e8d5;   
-            --ui-panel-bg: rgba(255, 253, 245, 0.7); 
-            --green-shadow: rgba(130, 180, 80, 0.7);
-            --gold-shadow: rgba(180, 140, 0, 0.4);
-            --tech-gradient: linear-gradient(90deg, var(--tech-green), var(--tech-gold));
-            --tech-gradient-vertical: linear-gradient(to top, var(--tech-green), var(--tech-gold));
-
-            /* === THE FIX IS HERE === */
-            /* 1. A rich "Antique Bronze" at the top for readability.
-               2. Flows into "Goldenrod" in the middle.
-               3. Ends with "Bright Gold" at the bottom for the shine.
-            */
-            --countdown-gradient: linear-gradient(180deg, var(--gold-shadow) 0%, var(--green-shadow) 50%,#3a4a2a 100%);
-            
-            /* A warm, semi-transparent brown shadow (instead of black/green) */
-            --countdown-drop-shadow: linear-gradient(180deg, var(--tech-gold) 0%, var(--tech-green) 50%, var(--green-shadow) 100%);
-        }
 
         body, html {
             margin: 0; padding: 0; height: 100%; overflow: hidden;
-            background-color: #000; 
+            background-color: #000; /* Black background for the reveal */
             font-family: 'Orbitron', sans-serif;
             width: 100vw; height: 100vh;
         }
 
-        /* --- LAYER 1: WEBSITE IMAGE --- */
+        /* --- LAYER 1: WEBSITE IMAGE (Fixed at back) --- */
         #reveal-layer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('snmbct.png'); 
@@ -49,35 +24,55 @@
             z-index: 1;
         }
 
-        /* --- LAYER 2: CONFETTI --- */
+        /* --- LAYER 2: CONFETTI (On top) --- */
         #confetti-canvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 100;
         }
 
-        /* --- LAYER 3: CURTAIN --- */
+        /* --- LAYER 3: THE CURTAIN (Slides Up) --- */
         #launch-curtain {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            /* bluriness at the bottom of gradient */
-            background: linear-gradient(to bottom, var(--light-bg-edge) 0%, var(--light-bg-center) 95%, #f2e8d5a8 100%);
+            background-color: hsl(48, 20%, 90%); 
             display: flex; justify-content: center; align-items: center;
             z-index: 50; 
+            
+            /* PHYSICS: Heavy start, fast finish */
             transition: transform 4s cubic-bezier(0.8, 0, 1, 1);
             will-change: transform;
-            overflow: hidden; 
         }
-        #launch-curtain.launching { transform: translateY(-150vh); }
+
+        #launch-curtain.launching {
+            /* Move UP by 1.5x screen height to ensure it clears completely */
+            transform: translateY(-150vh);
+        }
 
         /* --- ROCKET CONTAINER --- */
         #rocket-wrapper {
-            position: absolute; top: 110%; left: 50%;
-            transform: translateX(-50%) rotate(-45deg) translateY(-50px);
+            position: absolute;
+            /* START POSITION: Exactly at the bottom edge of the view */
+            top: 110%; 
+            left: 50%;
+            /* Center X and rotate 45deg */
+            transform: translateX(-50%) rotate(-45deg) translateY(-50px); /* -50px to overlap slightly */
             z-index: 60;
+            
+            /* EXACT SAME PHYSICS as Curtain */
             transition: transform 4s cubic-bezier(0.8, 0, 1, 1);
-            will-change: transform; pointer-events: none;
+            will-change: transform;
+            pointer-events: none;
         }
-        #rocket-wrapper.launching { transform: translateX(-50%) rotate(45deg) translateY(calc(-180vh - 10px)); }
-        #rocket-video { width: 150px; display: block; }
+
+        #rocket-wrapper.launching {
+            /* Move UP by 1.5x screen height (matches curtain exactly) */
+            /* We keep the X centering and rotation, just add the Y movement */
+            transform: translateX(-50%) rotate(45deg) translateY(calc(-250vh - 10px));
+        }
+
+        #rocket-video {
+            width: 150px; /* Adjust size as needed */
+            display: block;
+        }
 
         /* --- UI ELEMENTS --- */
         .ui-container {
@@ -86,105 +81,75 @@
         }
         .ui-container.hidden, .meter-wrapper.hidden { opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
 
-        h1 { color: #3a4a2a; font-size: 2rem; letter-spacing: 4px; margin-bottom: 1rem; text-transform: uppercase; font-weight: bolder; text-shadow: 0 0 10px rgba(186, 255, 128, 0.3); }
-        h2 { color: #5a6a4a; font-size: 1.5rem; letter-spacing: 3px; margin-bottom: 2rem; text-transform: uppercase; font-weight: bold; }
+        h1 { color: #4a3b2a; font-size: 2rem; letter-spacing: 4px; margin-bottom: 1rem; text-transform: uppercase; font-weight: bolder; }
+        h2 { color: #6b553f; font-size: 1.5rem; letter-spacing: 3px; margin-bottom: 2rem; text-transform: uppercase; font-weight: bold; }
 
         /* BUTTON */
         .power-btn {
             position: relative; width: 320px; height: 90px;
-            background: var(--ui-panel-bg);
-            border: 3px solid var(--tech-green);
-            color: #3a4a2a; 
+            background: #2b2b2b; border: 3px solid #d4af37; color: #fff; 
             font-family: 'Orbitron', sans-serif; font-size: 1.8rem; font-weight: 900;
             cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 5px 15px var(--green-shadow); 
-            transition: transform 0.05s, border-color 0.3s, box-shadow 0.3s, color 0.3s;
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3); transition: transform 0.05s;
             -webkit-tap-highlight-color: transparent; outline: none; border-radius: 8px;
         }
         .power-btn:active { transform: scale(0.96); }
-        .power-btn.locked { border-color: var(--tech-gold); box-shadow: 0 0 20px var(--gold-shadow); color: #6a5a00;}
-        
-        .btn-fill { position: absolute; bottom: 0; left: 0; height: 100%; width: 0%; background: var(--tech-gradient); z-index: 1; opacity: 1; transition: width 0.05s linear; }
-        .btn-text { position: relative; z-index: 2; text-transform: uppercase; letter-spacing: 5px; text-shadow: 0 1px 2px rgba(255,255,255,0.8); z-index: 3; pointer-events: none; mix-blend-mode: multiply;}
+        .power-btn.locked { border-color: #ff5500; box-shadow: 0 0 40px #ff5500; }
+
+        .btn-fill {
+            position: absolute; bottom: 0; left: 0; height: 100%; width: 0%;
+            background: linear-gradient(90deg, #ff9900, #ff5500); z-index: 1; opacity: 1; transition: width 0.05s linear; 
+        }
+
+        .btn-text {
+            position: relative; z-index: 2; text-transform: uppercase; letter-spacing: 5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5); pointer-events: none;
+        }
 
         /* METERS */
-        .meter-wrapper { 
-            position: absolute; bottom: 40px; width: 48px; height: 240px; z-index: 10; 
-            display: flex; flex-direction: column-reverse; gap: 4px; padding: 4px; 
-            border: 2px solid var(--tech-green); 
-            background: rgba(245, 255, 235, 0.6); 
-            border-radius: 4px; transition: opacity 1s; 
-            box-shadow: 0 5px 15px var(--green-shadow);
+        .meter-wrapper {
+            position: absolute; bottom: 40px; width: 48px; height: 240px; z-index: 10;
+            display: flex; flex-direction: column-reverse; gap: 4px; padding: 4px;
+            border: 2px solid #d4af37; background: rgba(255, 255, 255, 0.5);
+            border-radius: 4px; transition: opacity 1s;
         }
         .meter-left { left: 40px; transform: skewX(-10deg); }
         .meter-right { right: 40px; transform: skewX(10deg); }
-        .meter-liquid { width: 100%; height: 0%; background: var(--tech-gradient-vertical); box-shadow: 0 0 10px var(--tech-green); transition: height 0.05s linear; }
 
-        .status-text { margin-top: 20px; color: #3a4a2a; font-size: 1.2rem; font-weight: bold; }
-        #phaseIndicator { display: block; font-size: 1rem; color: #b8a000; margin-top: 5px; opacity: 1; font-weight: 700; }
-        #redirect-link { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); color: var(--tech-green); z-index: 200; display: none; font-weight: bold; text-shadow: 0 1px 2px #000;}
+        .meter-liquid {
+            width: 100%; height: 0%;
+            background: linear-gradient(to top, #ff9900, #ff5500);
+            box-shadow: 0 0 10px #ff9900; transition: height 0.05s linear;
+        }
 
-        /* =========================================
-           HUD GRAPHICS
-           ========================================= */
+        .status-text { margin-top: 20px; color: #554433; font-size: 1.2rem; font-weight: bold; }
+        #phaseIndicator { display: block; font-size: 1rem; color: #7c6107; margin-top: 5px; opacity: 1; font-weight: 700;}
+        #redirect-link { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); color: #fff; z-index: 200; display: none; font-weight: bold; text-shadow: 0 2px 4px #000;}
+
+        /* HUD */
         #countdown-graphics {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 90; opacity: 0;
             transition: opacity 0.5s ease;
             display: flex; justify-content: center; align-items: center;
-            perspective: 1000px; 
         }
         #countdown-graphics.active { opacity: 1; }
-
-        .tech-grid {
-            position: absolute; width: 200vw; height: 200vh;
-            background-image: 
-                linear-gradient(var(--green-shadow) 1px, transparent 1px),
-                linear-gradient(90deg, var(--green-shadow) 1px, transparent 1px);
-            background-size: 50px 50px;
-            transform: rotateX(80deg) translateY(-200px);
-            opacity: 0.4;
-            animation: gridMove 5s linear infinite;
-        }
-        .tech-grid.top { transform: rotateX(-80deg) translateY(200px); }
-
-        .tech-ring { position: absolute; border-radius: 50%; }
-        .ring-1 { width: 500px; height: 500px; border: 2px dashed var(--tech-green); animation: spin 20s linear infinite; box-shadow: 0 0 15px var(--green-shadow); }
-        .ring-2 { width: 400px; height: 400px; border-left: 4px solid var(--tech-gold); border-right: 4px solid var(--tech-gold); border-top: 4px solid transparent; border-bottom: 4px solid transparent; animation: spin-reverse 5s linear infinite; filter: drop-shadow(0 0 5px var(--gold-shadow)); }
-        .ring-3 { width: 650px; height: 650px; border: 1px solid var(--green-shadow); }
-
-        .bracket { position: absolute; width: 100px; height: 100px; border-color: var(--tech-green); border-style: solid; transition: all 0.5s ease-out; opacity: 0.8; box-shadow: 3px 3px 10px var(--green-shadow), inset 2px 2px 5px var(--green-shadow); }
-        .bracket.tl { top: 30%; left: 30%; border-width: 4px 0 0 4px; }
-        .bracket.tr { top: 30%; right: 30%; border-width: 4px 4px 0 0; }
-        .bracket.bl { bottom: 30%; left: 30%; border-width: 0 0 4px 4px; }
-        .bracket.br { bottom: 30%; right: 30%; border-width: 0 4px 4px 0; }
-
-        .scan-line { position: absolute; width: 100%; height: 4px; background: var(--tech-green); box-shadow: 0 0 15px var(--green-shadow); top: 0; animation: scan 3s ease-in-out infinite alternate; opacity: 0.7; }
-
-        .readout { position: absolute; font-family: 'Share Tech Mono', monospace; color: #2a5a3a; font-size: 1rem; font-weight: bold; opacity: 0.8; }
-        .r1 { top: 32%; left: 50%; }
-        .r2 { bottom: 25%; right: 50%; }
-
-        @keyframes gridMove { 0% { background-position: 0 0; } 100% { background-position: 0 50px; } }
+        .ring { position: absolute; border-radius: 50%; border: 2px solid rgba(212, 175, 55, 0.3); box-shadow: 0 0 20px rgba(212, 175, 55, 0.1); }
+        .ring-outer { width: 480px; height: 480px; border-top: 4px solid #d4af37; border-bottom: 4px solid #d4af37; border-left: 4px solid transparent; border-right: 4px solid transparent; animation: spin 10s linear infinite; }
+        .ring-middle { width: 420px; height: 420px; border: 2px dashed #ff9900; opacity: 0.5; animation: spin-reverse 15s linear infinite; }
+        .ring-inner { width: 300px; height: 300px; border: 1px solid #d4af37; opacity: 0.8; background: conic-gradient(from 0deg, transparent 0%, transparent 90%, rgba(212, 175, 55, 0.2) 100%); animation: spin 3s linear infinite; }
+        .crosshair-line { position: absolute; background: rgba(74, 59, 42, 0.2); }
+        .ch-h { width: 100vw; height: 1px; }
+        .ch-v { width: 1px; height: 100vh; }
+        .t-minus-label { position: absolute; top: 15%; font-size: 2rem; letter-spacing: 8px; color: #6b553f; font-weight: bold; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
-        @keyframes scan { 0% { top: 20%; opacity: 0; } 50% { opacity: 1; } 100% { top: 80%; opacity: 0; } }
 
-        /* --- UPDATED COUNTDOWN NUMBER --- */
+        /* COUNTDOWN */
         #countdown-overlay {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 16rem; font-weight: 900; 
-            
-            /* Apply the Bronze-to-Gold Gradient */
-            background: var(--countdown-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            
-            /* Clean "Lifted" Shadow 
-               This makes it pop off the cream background without looking dirty.
-            */
-            filter: drop-shadow(0 8px 12px var(--countdown-drop-shadow));
-            
+            font-size: 16rem; font-weight: 900; color: #d4af37;
+            text-shadow: 0 0 40px rgba(212, 175, 55, 0.8);
             z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
         }
         #countdown-overlay.active { opacity: 1; }
@@ -204,22 +169,12 @@
     <div id="launch-curtain">
         
         <div id="countdown-graphics">
-            <div class="tech-grid"></div>
-            <div class="tech-grid top"></div>
-            
-            <div class="tech-ring ring-1"></div>
-            <div class="tech-ring ring-2"></div>
-            <div class="tech-ring ring-3"></div>
-
-            <div class="bracket tl"></div>
-            <div class="bracket tr"></div>
-            <div class="bracket bl"></div>
-            <div class="bracket br"></div>
-
-            <div class="scan-line"></div>
-
-            <div class="readout r1">SYSTEM CHECK: OPTIMAL</div>
-            <div class="readout r2">GUIDANCE: LOCKED</div>
+            <div class="crosshair-line ch-h"></div>
+            <div class="crosshair-line ch-v"></div>
+            <div class="ring ring-outer"></div>
+            <div class="ring ring-middle"></div>
+            <div class="ring ring-inner"></div>
+            <div class="t-minus-label">T-MINUS</div>
         </div>
 
         <div id="countdown-overlay">10</div>
@@ -227,7 +182,7 @@
         <div class="ui-container" id="uiContainer">
             <img src="logo.png" alt="SNMBCT Logo" style="width: 120px; margin-bottom: 1rem;">
             <h1>Shree Navi Mumbai Bhanushali Charitable Trust</h1>
-            <h2>Official Launch</h2>
+            <h2>WEBSITE - Official Launch</h2>
             <button class="power-btn" id="powerBtn">
                 <div class="btn-fill" id="btnFill"></div>
                 <span class="btn-text">INITIALIZING</span>
@@ -247,6 +202,7 @@
     <div id="rocket-wrapper">
         <video id="rocket-video" src="Rocket.mp4" muted loop playsinline></video>
     </div>
+    
 
     <script>
         // ================= CONFIG =================
@@ -354,15 +310,14 @@
             phaseText.innerText = stage.name;
         }
 
-        // ================= CONFETTI (UPDATED COLORS) =================
+        // ================= CONFETTI =================
         const canvas = document.getElementById('confetti-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
         function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resizeCanvas); resizeCanvas();
         function createConfetti() {
-            // Updated colors to warmer lime green, Gold, and Cream
-            const colors = ['#baff80', '#ffd700', '#fffff0', '#aadd77'];
+            const colors = ['#d4af37', '#ff9900', '#ffffff', '#ff5500'];
             function spawnExplosion(xOrigin, yOrigin) {
                 for(let i=0; i<300; i++) {
                     particles.push({
@@ -388,14 +343,11 @@
         function triggerSuccess() {
             if(isComplete) return;
             isComplete = true;
-
             ui.classList.add('hidden');
             meterWrappers.forEach(w => w.classList.add('hidden'));
-
             graphicsEl.classList.add('active');
             countdownEl.classList.add('active');
             countdownEl.classList.add('pulsing');
-            
             let timeLeft = 10;
             countdownEl.innerText = timeLeft;
             const countdownTimer = setInterval(() => {
@@ -417,6 +369,8 @@
 
             rocketVideo.play();
             
+            // PHYSICS ENGINE TRIGGER
+            // Small delay to ensure render cycle catches the video play
             setTimeout(() => {
                 rocketWrapper.classList.add('launching');
                 curtain.classList.add('launching');
