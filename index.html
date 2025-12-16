@@ -123,6 +123,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            gap: 0.75rem;
         }
 
         .ui-container.hidden,
@@ -134,20 +135,27 @@
 
         h1 {
             color: #4a3b2a;
-            font-size: 2rem;
+            font-size: 2.5rem;
             letter-spacing: 4px;
-            margin-bottom: 1rem;
+            margin: 1rem 0;
             text-transform: uppercase;
             font-weight: bolder;
         }
 
-        h2 {
-            color: #6b553f;
+        h2, h3 {
             font-size: 1.5rem;
             letter-spacing: 3px;
-            margin-bottom: 2rem;
+            margin: 0.5rem 0;
             text-transform: uppercase;
             font-weight: bold;
+        }
+
+        h2 {
+            color: #6b553f;
+        }
+
+        h3 {
+            color: #7c6107;
         }
 
         /* BUTTON */
@@ -366,8 +374,13 @@
             transform: translate(-50%, -50%);
             font-size: 16rem;
             font-weight: 900;
-            color: #d4af37;
-            text-shadow: 0 0 40px rgba(212, 175, 55, 0.8);
+            color: #c99700;
+            /* deeper gold */
+            text-shadow:
+                0 0 6px rgba(0, 0, 0, 0.35),
+                /* edge contrast */
+                0 0 35px rgba(212, 175, 55, 0.9),
+                0 0 70px rgba(212, 175, 55, 0.6);
             z-index: 100;
             opacity: 0;
             pointer-events: none;
@@ -420,9 +433,11 @@
         <div id="countdown-overlay">10</div>
 
         <div class="ui-container" id="uiContainer">
-            <img src="logo.png" alt="SNMBCT Logo" style="width: 120px; margin-bottom: 1rem;">
-            <h1>Shree Navi Mumbai Bhanushali Charitable Trust</h1>
-            <h2>WEBSITE - Official Launch</h2>
+            <img src="logo.png" alt="SNMBCT Logo" style="width: 100px; margin: 1rem 0;">
+
+            <h1 style="text-decoration: underline;" >SNMBCT.ORG</h1>
+            <h2>Shree Navi Mumbai Bhanushali Charitable Trust</h2>
+            <h3>WEBSITE - Official Launch</h3>
             <button class="power-btn" id="powerBtn">
                 <div class="btn-fill" id="btnFill"></div>
                 <span class="btn-text">INITIALIZING</span>
@@ -517,39 +532,53 @@
             function step() {
                 if (isComplete) return;
 
-                let increment = 0;
-                let delay = 0;
+                let increment;
+                let delay;
 
-                // LOGIC: 
-                // 15% Chance to PAUSE for 0.5s
-                // 85% Chance to LOAD FAST (add 1-4%)
-
-                if (Math.random() < 0.15) {
-                    // --- THE STUTTER ---
-                    increment = 0;
-                    delay = 500; // 0.5 seconds exactly
+                // ---------- FORCED PAUSE POINTS ----------
+                if (charge < 51 && charge + 2 >= 51) {
+                    charge = 51;
+                    updateVisuals();
                     phaseText.innerText = "VERIFYING...";
-                } else {
-                    // --- THE SPEED ---
-                    increment = 1.75 + Math.random() * 4; // ~1.5–5.5%
-                    delay = 25 + Math.random() * 25;     // 25–50ms (never above 50)
-                    phaseText.innerText = "SYSTEM CHARGING";
+                    return setTimeout(step, 50);
                 }
+
+                if (charge < 77 && charge + 2 >= 77) {
+                    charge = 77;
+                    updateVisuals();
+                    phaseText.innerText = "SYSTEM CHECK";
+                    return setTimeout(step, 77);
+                }
+
+                if (charge < 99 && charge + 2 >= 99) {
+                    charge = 99;
+                    updateVisuals();
+                    phaseText.innerText = "FINALIZING...";
+                    return setTimeout(step, 750);
+                }
+
+                // ---------- NORMAL FAST LOADING ----------
+                increment = 1.75 + Math.random() * 4; // ~1.75–5.75%
+                delay = 100 + Math.random() * 120;
+
+                phaseText.innerText = "SYSTEM CHARGING";
 
                 charge += increment;
 
-                // Cap at 100%
                 if (charge >= 100) {
                     charge = 100;
-                    updateVisuals(); // Ensure 100% shows
-                    triggerSuccess(); // Done
+                    updateVisuals();
+                    triggerSuccess();
                 } else {
-                    updateVisuals(); // Update Bar
-                    setTimeout(step, delay); // Loop
+                    updateVisuals();
+                    setTimeout(step, delay);
                 }
             }
-            step(); // Start Loop
+
+            step();
         }
+
+
 
         function updateVisuals() {
             let show = Math.min(charge, 100);
@@ -625,18 +654,39 @@
         function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resizeCanvas); resizeCanvas();
         function createConfetti() {
-            const colors = ['#baff80', '#ffd700', '#fffff0', '#aadd77'];
+            const colors = [
+                '#ff3b3b', // red
+                '#ff7a18', // orange
+                '#ffd700', // gold
+                '#00e5ff', // cyan
+                '#00ff9c', // green
+                '#9d4edd', // purple
+                '#ff4ecd', // pink
+                '#ffffff', // white
+                '#4cc9f0', // blue
+                '#f9c74f'  // yellow
+            ];
+
             function spawnExplosion(xOrigin, yOrigin) {
-                for (let i = 0; i < 300; i++) {
+                for (let i = 0; i < 360; i++) {
                     particles.push({
-                        x: xOrigin, y: yOrigin, vx: (Math.random() - 0.5) * 50, vy: (Math.random() - 1.2) * 40,
-                        size: Math.random() * 12 + 4, color: colors[Math.floor(Math.random() * colors.length)],
-                        life: 200, drag: 0.92
+                        x: xOrigin,
+                        y: yOrigin,
+                        vx: (Math.random() - 0.5) * 55,
+                        vy: (Math.random() - 1.3) * 45,
+                        size: Math.random() * 6 + 6,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        life: 230,
+                        drag: 0.92
                     });
                 }
             }
-            spawnExplosion(0, window.innerHeight); spawnExplosion(window.innerWidth, window.innerHeight); animateConfetti();
+
+            spawnExplosion(0, window.innerHeight);
+            spawnExplosion(window.innerWidth, window.innerHeight);
+            animateConfetti();
         }
+
         function animateConfetti() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach((p, index) => {
