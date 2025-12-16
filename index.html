@@ -1,42 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SNMBCT Website Launch</title>
     <link rel="preload" as="image" href="snmbct.png">
-    
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
 
-        body, html {
-            margin: 0; padding: 0; height: 100%; overflow: hidden;
-            background-color: #000; /* Black background for the reveal */
+        :root {
+            --tech-gradient: linear-gradient(90deg,
+                    #ff7a18,
+                    #ffb347,
+                    #ffd700);
+
+            --tech-gradient-vertical: linear-gradient(180deg,
+                    #ff7a18,
+                    #ffd700);
+
+            --tech-green: #ffd700;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            /* Black background for the reveal */
             font-family: 'Orbitron', sans-serif;
-            width: 100vw; height: 100vh;
+            width: 100vw;
+            height: 100vh;
         }
 
         /* --- LAYER 1: WEBSITE IMAGE (Fixed at back) --- */
         #reveal-layer {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('snmbct.png'); 
-            background-size: cover; background-position: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('snmbct.png');
+            background-size: cover;
+            background-position: center;
             z-index: 1;
         }
 
         /* --- LAYER 2: CONFETTI (On top) --- */
         #confetti-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 100;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
         }
 
         /* --- LAYER 3: THE CURTAIN (Slides Up) --- */
         #launch-curtain {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: hsl(48, 20%, 90%); 
-            display: flex; justify-content: center; align-items: center;
-            z-index: 50; 
-            
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: hsl(48, 20%, 90%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+
             /* PHYSICS: Heavy start, fast finish */
             transition: transform 4s cubic-bezier(0.8, 0, 1, 1);
             will-change: transform;
@@ -51,12 +87,13 @@
         #rocket-wrapper {
             position: absolute;
             /* START POSITION: Exactly at the bottom edge of the view */
-            top: 110%; 
+            top: 110%;
             left: 50%;
             /* Center X and rotate 45deg */
-            transform: translateX(-50%) rotate(-45deg) translateY(-50px); /* -50px to overlap slightly */
+            transform: translateX(-50%) rotate(-45deg) translateY(-50px);
+            /* -50px to overlap slightly */
             z-index: 60;
-            
+
             /* EXACT SAME PHYSICS as Curtain */
             transition: transform 4s cubic-bezier(0.8, 0, 1, 1);
             will-change: transform;
@@ -70,104 +107,307 @@
         }
 
         #rocket-video {
-            width: 150px; /* Adjust size as needed */
+            width: 150px;
+            /* Adjust size as needed */
             display: block;
         }
 
         /* --- UI ELEMENTS --- */
         .ui-container {
-            position: relative; z-index: 10; text-align: center; transition: all 0.5s ease; margin-bottom: 5rem;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            transition: all 0.5s ease;
+            margin-bottom: 5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-        .ui-container.hidden, .meter-wrapper.hidden { opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
 
-        h1 { color: #4a3b2a; font-size: 2rem; letter-spacing: 4px; margin-bottom: 1rem; text-transform: uppercase; font-weight: bolder; }
-        h2 { color: #6b553f; font-size: 1.5rem; letter-spacing: 3px; margin-bottom: 2rem; text-transform: uppercase; font-weight: bold; }
+        .ui-container.hidden,
+        .meter-wrapper.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        h1 {
+            color: #4a3b2a;
+            font-size: 2rem;
+            letter-spacing: 4px;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            font-weight: bolder;
+        }
+
+        h2 {
+            color: #6b553f;
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
 
         /* BUTTON */
         .power-btn {
-            position: relative; width: 320px; height: 90px;
-            background: #2b2b2b; border: 3px solid #d4af37; color: #fff; 
-            font-family: 'Orbitron', sans-serif; font-size: 1.8rem; font-weight: 900;
-            cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3); transition: transform 0.05s;
-            -webkit-tap-highlight-color: transparent; outline: none; border-radius: 8px;
+            position: relative;
+            width: 320px;
+            height: 90px;
+            background: #2b2b2b;
+            border: 3px solid #d4af37;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            cursor: pointer;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+            transition: transform 0.05s;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+            border-radius: 8px;
         }
-        .power-btn:active { transform: scale(0.96); }
-        .power-btn.locked { border-color: #ff5500; box-shadow: 0 0 40px #ff5500; }
+
+        .power-btn:active {
+            transform: scale(0.96);
+        }
+
+        .power-btn.locked {
+            border-color: #ff5500;
+            box-shadow: 0 0 40px #ff5500;
+        }
 
         .btn-fill {
-            position: absolute; bottom: 0; left: 0; height: 100%; width: 0%;
-            background: linear-gradient(90deg, #ff9900, #ff5500); z-index: 1; opacity: 1; transition: width 0.05s linear; 
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--tech-gradient);
+            z-index: 1;
+            opacity: 1;
+            /* CHANGED: Smoother ease-out for loading jumps */
+            transition: width 0.2s ease-out;
         }
 
         .btn-text {
-            position: relative; z-index: 2; text-transform: uppercase; letter-spacing: 5px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5); pointer-events: none;
+            position: relative;
+            z-index: 2;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
         }
 
         /* METERS */
         .meter-wrapper {
-            position: absolute; bottom: 40px; width: 48px; height: 240px; z-index: 10;
-            display: flex; flex-direction: column-reverse; gap: 4px; padding: 4px;
-            border: 2px solid #d4af37; background: rgba(255, 255, 255, 0.5);
-            border-radius: 4px; transition: opacity 1s;
+            position: absolute;
+            bottom: 40px;
+            width: 48px;
+            height: 240px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 4px;
+            padding: 4px;
+            border: 2px solid #d4af37;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 4px;
+            transition: opacity 1s;
         }
-        .meter-left { left: 40px; transform: skewX(-10deg); }
-        .meter-right { right: 40px; transform: skewX(10deg); }
+
+        .meter-left {
+            left: 40px;
+            transform: skewX(-10deg);
+        }
+
+        .meter-right {
+            right: 40px;
+            transform: skewX(10deg);
+        }
 
         .meter-liquid {
-            width: 100%; height: 0%;
-            background: linear-gradient(to top, #ff9900, #ff5500);
-            box-shadow: 0 0 10px #ff9900; transition: height 0.05s linear;
+            width: 100%;
+            height: 0%;
+            background: var(--tech-gradient-vertical);
+            box-shadow: 0 0 10px var(--tech-green);
+            /* Match the button speed */
+            transition: height 0.2s ease-out;
         }
 
-        .status-text { margin-top: 20px; color: #554433; font-size: 1.2rem; font-weight: bold; }
-        #phaseIndicator { display: block; font-size: 1rem; color: #7c6107; margin-top: 5px; opacity: 1; font-weight: 700;}
-        #redirect-link { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); color: #fff; z-index: 200; display: none; font-weight: bold; text-shadow: 0 2px 4px #000;}
+        .status-text {
+            margin-top: 20px;
+            color: #554433;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        #phaseIndicator {
+            display: block;
+            font-size: 1rem;
+            color: #7c6107;
+            margin-top: 5px;
+            opacity: 1;
+            font-weight: 700;
+        }
+
+        #redirect-link {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            z-index: 200;
+            display: none;
+            font-weight: bold;
+            text-shadow: 0 2px 4px #000;
+        }
 
         /* HUD */
         #countdown-graphics {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 90; opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 90;
+            opacity: 0;
             transition: opacity 0.5s ease;
-            display: flex; justify-content: center; align-items: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        #countdown-graphics.active { opacity: 1; }
-        .ring { position: absolute; border-radius: 50%; border: 2px solid rgba(212, 175, 55, 0.3); box-shadow: 0 0 20px rgba(212, 175, 55, 0.1); }
-        .ring-outer { width: 480px; height: 480px; border-top: 4px solid #d4af37; border-bottom: 4px solid #d4af37; border-left: 4px solid transparent; border-right: 4px solid transparent; animation: spin 10s linear infinite; }
-        .ring-middle { width: 420px; height: 420px; border: 2px dashed #ff9900; opacity: 0.5; animation: spin-reverse 15s linear infinite; }
-        .ring-inner { width: 300px; height: 300px; border: 1px solid #d4af37; opacity: 0.8; background: conic-gradient(from 0deg, transparent 0%, transparent 90%, rgba(212, 175, 55, 0.2) 100%); animation: spin 3s linear infinite; }
-        .crosshair-line { position: absolute; background: rgba(74, 59, 42, 0.2); }
-        .ch-h { width: 100vw; height: 1px; }
-        .ch-v { width: 1px; height: 100vh; }
-        .t-minus-label { position: absolute; top: 15%; font-size: 2rem; letter-spacing: 8px; color: #6b553f; font-weight: bold; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+
+        #countdown-graphics.active {
+            opacity: 1;
+        }
+
+        .ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+        }
+
+        .ring-outer {
+            width: 480px;
+            height: 480px;
+            border-top: 4px solid #d4af37;
+            border-bottom: 4px solid #d4af37;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            animation: spin 10s linear infinite;
+        }
+
+        .ring-middle {
+            width: 420px;
+            height: 420px;
+            border: 2px dashed #ff9900;
+            opacity: 0.5;
+            animation: spin-reverse 15s linear infinite;
+        }
+
+        .ring-inner {
+            width: 300px;
+            height: 300px;
+            border: 1px solid #d4af37;
+            opacity: 0.8;
+            background: conic-gradient(from 0deg, transparent 0%, transparent 90%, rgba(212, 175, 55, 0.2) 100%);
+            animation: spin 3s linear infinite;
+        }
+
+        .crosshair-line {
+            position: absolute;
+            background: rgba(74, 59, 42, 0.2);
+        }
+
+        .ch-h {
+            width: 100vw;
+            height: 1px;
+        }
+
+        .ch-v {
+            width: 1px;
+            height: 100vh;
+        }
+
+        .t-minus-label {
+            position: absolute;
+            top: 15%;
+            font-size: 2rem;
+            letter-spacing: 8px;
+            color: #6b553f;
+            font-weight: bold;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin-reverse {
+            100% {
+                transform: rotate(-360deg);
+            }
+        }
 
         /* COUNTDOWN */
         #countdown-overlay {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 16rem; font-weight: 900; color: #d4af37;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 16rem;
+            font-weight: 900;
+            color: #d4af37;
             text-shadow: 0 0 40px rgba(212, 175, 55, 0.8);
-            z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
         }
-        #countdown-overlay.active { opacity: 1; }
-        @keyframes pulse { 0% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.1); } 100% { transform: translate(-50%, -50%) scale(1); } }
-        #countdown-overlay.pulsing { animation: pulse 1s infinite; }
 
+        #countdown-overlay.active {
+            opacity: 1;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        #countdown-overlay.pulsing {
+            animation: pulse 1s infinite;
+        }
     </style>
 </head>
+
 <body>
 
     <audio id="launchAudio" src="launch.mp3" loop preload="auto"></audio>
 
     <div id="reveal-layer"></div>
-    
+
     <canvas id="confetti-canvas"></canvas>
 
     <div id="launch-curtain">
-        
+
         <div id="countdown-graphics">
             <div class="crosshair-line ch-h"></div>
             <div class="crosshair-line ch-v"></div>
@@ -187,7 +427,8 @@
                 <div class="btn-fill" id="btnFill"></div>
                 <span class="btn-text">INITIALIZING</span>
             </button>
-            <div class="status-text">POWER: <span id="chargeDisplay">0</span>% <span id="phaseIndicator">PHASE 1</span></div>
+            <div class="status-text">POWER: <span id="chargeDisplay">0</span>% <span id="phaseIndicator">PHASE 1</span>
+            </div>
         </div>
 
         <div class="meter-wrapper meter-left" id="meterLeftWrapper">
@@ -202,22 +443,22 @@
     <div id="rocket-wrapper">
         <video id="rocket-video" src="Rocket.mp4" muted loop playsinline></video>
     </div>
-    
+
 
     <script>
         // ================= CONFIG =================
         const TARGET_URL = "https://snmbct.org";
         const AUTO_PILOT_START = 95;
-        const AUDIO_START_TIME = 12; 
-        
+        const AUDIO_START_TIME = 12;
+
         // ================= STATE =================
         let charge = 0;
+        let isStarted = false;
         let isComplete = false;
-        let isAutoMode = false;
-        let decayInterval;
         let audioStarted = false;
-        let actualVolume = 0; 
+        let actualVolume = 0;
 
+        // DOM
         const btn = document.getElementById('powerBtn');
         const fill = document.getElementById('btnFill');
         const text = document.getElementById('chargeDisplay');
@@ -231,15 +472,16 @@
         const graphicsEl = document.getElementById('countdown-graphics');
         const rocketWrapper = document.getElementById('rocket-wrapper');
         const rocketVideo = document.getElementById('rocket-video');
+        const btnTextSpan = document.querySelector('.btn-text');
 
         // ================= AUDIO ENGINE =================
         function audioLoop() {
-            if(isComplete) return; 
+            if (isComplete) return;
             let targetVolume = 0;
             if (charge > 0) { targetVolume = 0.6 + ((charge / 100) * 0.4); }
             actualVolume += (targetVolume - actualVolume) * 0.1;
-            if(actualVolume < 0.001) actualVolume = 0;
-            if(actualVolume > 1) actualVolume = 1;
+            if (actualVolume < 0.001) actualVolume = 0;
+            if (actualVolume > 1) actualVolume = 1;
             bgm.volume = actualVolume;
             requestAnimationFrame(audioLoop);
         }
@@ -249,81 +491,147 @@
                 audioStarted = true;
                 bgm.currentTime = AUDIO_START_TIME;
                 bgm.play().catch(e => console.log("Browser blocked audio"));
-                audioLoop(); 
+                audioLoop();
             }
         }
 
-        // ================= GAME LOGIC =================
-        function getStage(c) {
-            if (c < 50) return { add: 20, sub: 10, name: "PHASE 1: TURBO" };
-            return { add: 10, sub: 5, name: "PHASE 2: STABILIZE" };
-        }
-
+        // ================= CLICK HANDLER =================
         function clickHandler(e) {
-            if(e.cancelable) e.preventDefault();
-            if(isComplete || isAutoMode) return;
+            if (e.cancelable) e.preventDefault();
+            if (isStarted) return;
+            isStarted = true;
+
             triggerAudioStart();
-            const stage = getStage(charge);
-            charge += stage.add;
+
             btn.style.transform = "scale(0.98)";
             setTimeout(() => btn.style.transform = "scale(1)", 50);
-            if(charge >= AUTO_PILOT_START) { engageAutoPilot(); } else { updateVisuals(); }
+
+            btnTextSpan.innerText = "LOADING...";
+
+            // Start the Fast Loading Logic
+            runLoadingSequence();
         }
 
-        function engageAutoPilot() {
-            if(isAutoMode) return;
-            isAutoMode = true;
-            clearInterval(decayInterval); 
-            charge = 95;
-            phaseText.innerText = "PHASE 3: INJECTION";
-            btn.classList.add('locked');
-            function loop() {
-                charge += 0.5; 
-                if(charge >= 100) {
-                    charge = 100;
-                    updateVisuals();
-                    triggerSuccess();
+        // ================= NEW LOADING LOGIC =================
+        function runLoadingSequence() {
+            function step() {
+                if (isComplete) return;
+
+                let increment = 0;
+                let delay = 0;
+
+                // LOGIC: 
+                // 15% Chance to PAUSE for 0.5s
+                // 85% Chance to LOAD FAST (add 1-4%)
+
+                if (Math.random() < 0.15) {
+                    // --- THE STUTTER ---
+                    increment = 0;
+                    delay = 500; // 0.5 seconds exactly
+                    phaseText.innerText = "VERIFYING...";
                 } else {
-                    updateVisuals();
-                    requestAnimationFrame(loop);
+                    // --- THE SPEED ---
+                    increment = 1.75 + Math.random() * 4; // ~1.5–5.5%
+                    delay = 25 + Math.random() * 25;     // 25–50ms (never above 50)
+                    phaseText.innerText = "SYSTEM CHARGING";
+                }
+
+                charge += increment;
+
+                // Cap at 100%
+                if (charge >= 100) {
+                    charge = 100;
+                    updateVisuals(); // Ensure 100% shows
+                    triggerSuccess(); // Done
+                } else {
+                    updateVisuals(); // Update Bar
+                    setTimeout(step, delay); // Loop
                 }
             }
-            requestAnimationFrame(loop);
-        }
-
-        function startDecay() {
-            decayInterval = setInterval(() => {
-                if(isComplete || isAutoMode) return;
-                const stage = getStage(charge);
-                if(charge > 0) charge -= stage.sub;
-                if(charge < 0) charge = 0;
-                updateVisuals();
-            }, 100);
+            step(); // Start Loop
         }
 
         function updateVisuals() {
             let show = Math.min(charge, 100);
-            const stage = isAutoMode ? { name: "PHASE 3: INJECTION" } : getStage(charge);
+
+            // This applies width immediately. CSS transition handles the smoothing.
             fill.style.width = show + "%";
             meters.forEach(m => m.style.height = show + "%");
+
             text.innerText = Math.floor(show);
-            phaseText.innerText = stage.name;
         }
 
-        // ================= CONFETTI =================
+        // ================= SUCCESS SEQUENCE =================
+        function triggerSuccess() {
+            if (isComplete) return;
+            isComplete = true;
+
+            btn.classList.add('locked');
+            btnTextSpan.innerText = "SYSTEM READY";
+
+            setTimeout(() => {
+                ui.classList.add('hidden');
+                meterWrappers.forEach(w => w.classList.add('hidden'));
+
+                graphicsEl.classList.add('active');
+                countdownEl.classList.add('active');
+                countdownEl.classList.add('pulsing');
+
+                let timeLeft = 10;
+                countdownEl.innerText = timeLeft;
+                const countdownTimer = setInterval(() => {
+                    timeLeft--;
+                    if (timeLeft > 0) {
+                        countdownEl.innerText = timeLeft;
+                    } else {
+                        clearInterval(countdownTimer);
+                        executeLaunch();
+                    }
+                }, 1000);
+            }, 500);
+        }
+
+        function executeLaunch() {
+            countdownEl.classList.remove('pulsing');
+            countdownEl.style.fontSize = "4rem";
+            countdownEl.innerText = "LAUNCHING...";
+            graphicsEl.style.opacity = 0;
+
+            rocketVideo.play();
+
+            setTimeout(() => {
+                rocketWrapper.classList.add('launching');
+                curtain.classList.add('launching');
+            }, 50);
+
+            setTimeout(createConfetti, 1500);
+
+            const fadeDuration = 4000;
+            const startVol = bgm.volume;
+            const step = startVol / (fadeDuration / 50);
+            let fadeOut = setInterval(() => {
+                if (bgm.volume >= step) { bgm.volume -= step; }
+                else { bgm.volume = 0; bgm.pause(); clearInterval(fadeOut); }
+            }, 50);
+
+            setTimeout(() => { document.getElementById('redirect-link').style.display = 'block'; }, 4000);
+            setTimeout(() => { window.location.href = TARGET_URL; }, 5000);
+        }
+
+        // --- CONFETTI ---
         const canvas = document.getElementById('confetti-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
         function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resizeCanvas); resizeCanvas();
         function createConfetti() {
-            const colors = ['#d4af37', '#ff9900', '#ffffff', '#ff5500'];
+            const colors = ['#baff80', '#ffd700', '#fffff0', '#aadd77'];
             function spawnExplosion(xOrigin, yOrigin) {
-                for(let i=0; i<300; i++) {
+                for (let i = 0; i < 300; i++) {
                     particles.push({
-                        x: xOrigin, y: yOrigin, vx: (Math.random() - 0.5) * 50, vy: (Math.random() - 1.2) * 40, 
+                        x: xOrigin, y: yOrigin, vx: (Math.random() - 0.5) * 50, vy: (Math.random() - 1.2) * 40,
                         size: Math.random() * 12 + 4, color: colors[Math.floor(Math.random() * colors.length)],
-                        life: 200, drag: 0.92 
+                        life: 200, drag: 0.92
                     });
                 }
             }
@@ -334,66 +642,15 @@
             particles.forEach((p, index) => {
                 p.x += p.vx; p.y += p.vy; p.vx *= p.drag; p.vy *= p.drag; p.vy += 0.5; p.life--;
                 ctx.fillStyle = p.color; ctx.globalAlpha = Math.max(0, p.life / 100); ctx.fillRect(p.x, p.y, p.size, p.size);
-                if(p.life <= 0) particles.splice(index, 1);
+                if (p.life <= 0) particles.splice(index, 1);
             });
-            if(particles.length > 0) requestAnimationFrame(animateConfetti);
-        }
-
-        // ================= SUCCESS SEQUENCE =================
-        function triggerSuccess() {
-            if(isComplete) return;
-            isComplete = true;
-            ui.classList.add('hidden');
-            meterWrappers.forEach(w => w.classList.add('hidden'));
-            graphicsEl.classList.add('active');
-            countdownEl.classList.add('active');
-            countdownEl.classList.add('pulsing');
-            let timeLeft = 10;
-            countdownEl.innerText = timeLeft;
-            const countdownTimer = setInterval(() => {
-                timeLeft--;
-                if(timeLeft > 0) {
-                    countdownEl.innerText = timeLeft;
-                } else {
-                    clearInterval(countdownTimer);
-                    executeLaunch();
-                }
-            }, 1000);
-        }
-
-        function executeLaunch() {
-            countdownEl.classList.remove('pulsing');
-            countdownEl.style.fontSize = "4rem"; 
-            countdownEl.innerText = "LAUNCHING...";
-            graphicsEl.style.opacity = 0; 
-
-            rocketVideo.play();
-            
-            // PHYSICS ENGINE TRIGGER
-            // Small delay to ensure render cycle catches the video play
-            setTimeout(() => {
-                rocketWrapper.classList.add('launching');
-                curtain.classList.add('launching');
-            }, 50);
-
-            setTimeout(createConfetti, 1500);
-
-            const fadeDuration = 4000; 
-            const startVol = bgm.volume;
-            const step = startVol / (fadeDuration / 50);
-            let fadeOut = setInterval(() => {
-                if (bgm.volume >= step) { bgm.volume -= step; } 
-                else { bgm.volume = 0; bgm.pause(); clearInterval(fadeOut); }
-            }, 50);
-
-            setTimeout(() => { document.getElementById('redirect-link').style.display = 'block'; }, 4000);
-            setTimeout(() => { window.location.href = TARGET_URL; }, 5000); 
+            if (particles.length > 0) requestAnimationFrame(animateConfetti);
         }
 
         btn.addEventListener('mousedown', clickHandler);
         btn.addEventListener('touchstart', clickHandler);
-        startDecay();
 
     </script>
 </body>
+
 </html>
